@@ -1,11 +1,15 @@
 import React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
-import rules from './rules'
 
+import rules from './rules'
 import './styles.scss'
 
 class CellularAutomata extends React.Component {
+  static defaultProps = {
+    stateRules: [[1,1,1], [1,1,0], [1,0,1], [1,0,0], [0,1,1], [0,1,0], [0,0,1], [0,0,0]]
+  }
+
   constructor(props) {
     super(props)
     addArrayEqualityMethod();
@@ -20,19 +24,23 @@ class CellularAutomata extends React.Component {
     }
 
     this.state = {
-      rule: rules.rule30.slice()
+      rule: rules.rule30.slice(),
+      scale: 13,
+      width: undefined,
+      height: 80,
     }
   }
 
   componentDidMount() {
-    const scale = 13,
-          svgContainerWidth = document.querySelector('.svg-container').clientWidth;
+    const { scale, height } = this.state;
 
-    // initial params
-    let svg_dx = svgContainerWidth - (svgContainerWidth % scale) - scale,
-        svg_dy = 1000,
+    const svgContainerWidth = document.querySelector('.svg-container').clientWidth;
+    const initialWidth = svgContainerWidth - (svgContainerWidth % scale) - scale;
+
+    let svg_dx = initialWidth,
+        svg_dy = (scale + 2) * height,
         n_cols = this.isOdd(svg_dx, scale),
-        n_rows = svg_dy / scale,
+        n_rows = height,
         rows = d3.range(n_rows),
         cols = d3.range(n_cols),
         cells = d3.cross(rows, cols, (row, col) => {
@@ -126,9 +134,36 @@ class CellularAutomata extends React.Component {
     return new_states;
   }
 
+  toggleStateRule = (index) => {
+    const { rule } = this.state;
+    rule[index] = rule[index] ? 0 : 1;
+    this.setState({ rule });
+  }
+
   render() {
+    const { rule, scale, width, height } = this.state;
+    const { stateRules } = this.props;
+
     return(
       <div className='container'>
+        <div className='controls-container'>
+        </div>
+
+        <div className='rules-controls'>
+          {rule.map((item, index) => <div key={index} className='rule-control'>
+            <div className='rule-control-btn'
+              onClick={() => this.toggleStateRule(index)}>
+              <div className='rule-desc-container'>
+                <div className={stateRules[index][0]?'state-on':'state-off'}></div>
+                <div className={stateRules[index][1]?'state-on':'state-off'}></div>
+                <div className={stateRules[index][2]?'state-on':'state-off'}></div>
+              </div>
+              <div className={item?'state-on':'state-off'}></div>
+            </div>
+            <div className='rule-desc-bool'>{item}</div>
+          </div>)}
+        </div>
+
         <div className='svg-container'></div>
       </div>
     )

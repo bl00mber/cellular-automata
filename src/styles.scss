@@ -1,3 +1,6 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
 rect {
   fill: lightgray;
 }
@@ -7,12 +10,54 @@ rect {
 .state_1 {
   fill: red;
 }
-.svg-container {
-  width: 99%;
+.container, .svg-container, .controls-container, .rules-controls, .rule-control,
+.rule-control-btn, .rule-desc-container {
   display: flex;
   justify-content: center;
 }
-.container {
-  display: flex;
-  justify-content: center;
+.container, .rule-control, .rule-control-btn {
+  flex-direction: column;
+}
+.rule-control, .rule-control-btn {
+  align-items: center;
+}
+.svg-container {
+  width: 99%;
+}
+.controls-container {
+
+}
+.rules-controls {
+
+}
+.rule-control {
+  margin: 20px 20px 0 20px;
+}
+.rule-control-btn {
+  box-shadow: 0px 0px 10px #cacaca;
+  padding: 8px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0px 0px 10px #888;
+  }
+
+  &:active {
+    box-shadow: inset 0px 0px 10px #cacaca;
+  }
+}
+.rule-desc-bool {
+  margin: 10px;
+}
+.state-on, .state-off {
+  background: white;
+  height: 20px;
+  width: 20px;
+  border-radius: 5px;
+  border: 1px solid #cacaca;
+  margin: 1px;
+}
+.state-off {
+  background: black;
 }
