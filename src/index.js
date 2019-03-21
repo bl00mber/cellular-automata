@@ -24,7 +24,9 @@ class CellularAutomata extends React.Component {
     }
 
     this.state = {
+      ruleNumber: '30',
       rule: rules.rule30.slice(),
+      newRule: rules.rule30.slice(),
       scale: 13,
       width: undefined,
       height: 80,
@@ -32,23 +34,28 @@ class CellularAutomata extends React.Component {
   }
 
   componentDidMount() {
-    const { scale, height } = this.state;
-
+    const { scale } = this.state;
     const svgContainerWidth = document.querySelector('.svg-container').clientWidth;
     const initialWidth = svgContainerWidth - (svgContainerWidth % scale) - scale;
+    this.setState({ width: initialWidth }, () => this.generateRule())
+  }
 
-    let svg_dx = initialWidth,
-        svg_dy = (scale + 2) * height,
+  generateRule = () => {
+    const { scale, width, height } = this.state;
+
+    let svg_dx = width,
+        svg_dy = scale * height,
         n_cols = this.isOdd(svg_dx, scale),
         n_rows = height,
         rows = d3.range(n_rows),
         cols = d3.range(n_cols),
         cells = d3.cross(rows, cols, (row, col) => {
-            return {'row': row, 'col': col, 'state': 0};
+          return {'row': row, 'col': col, 'state': 0};
         });
 
     cells[Math.round(n_cols/2)-1].state = 1; // set initial state of cell in first row, center col to 1
 
+    d3.select('.svg-container').selectAll('svg').remove(); // destroy previous states
     let svg = d3.select('.svg-container')
                 .append('svg')
                 .attr('width', svg_dx)
@@ -135,22 +142,36 @@ class CellularAutomata extends React.Component {
   }
 
   toggleStateRule = (index) => {
-    const { rule } = this.state;
-    rule[index] = rule[index] ? 0 : 1;
-    this.setState({ rule });
+    const { newRule } = this.state;
+    newRule[index] = newRule[index] ? 0 : 1;
+    let ruleNumber;
+    for (const key in rules) {
+      if (rules[key].equals(newRule)) {
+        ruleNumber = key.slice(4);
+        break
+      }
+    }
+    this.setState({ ruleNumber, newRule });
+  }
+
+  generateNewRule = () => {
+    const { rule, newRule } = this.state;
+    if (!rule.equals(newRule)) this.setState({ rule: newRule.slice() }, () => this.generateRule())
   }
 
   render() {
-    const { rule, scale, width, height } = this.state;
     const { stateRules } = this.props;
+    const { ruleNumber, rule, newRule, scale, width, height } = this.state;
 
     return(
       <div className='container'>
         <div className='controls-container'>
+          <div className={rule.equals(newRule)?'generated-btn':'not-generated-btn'}
+            onClick={() => this.generateNewRule()}>Rule {ruleNumber}</div>
         </div>
 
         <div className='rules-controls'>
-          {rule.map((item, index) => <div key={index} className='rule-control'>
+          {newRule.map((item, index) => <div key={index} className='rule-control'>
             <div className='rule-control-btn'
               onClick={() => this.toggleStateRule(index)}>
               <div className='rule-desc-container'>
