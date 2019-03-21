@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
-import { Switch, FormControlLabel, TextField } from '@material-ui/core'
+import { Switch, FormControlLabel, TextField, Button } from '@material-ui/core'
 
 import rules from './rules'
 import './styles.scss'
@@ -166,9 +166,16 @@ class CellularAutomata extends React.Component {
     this.setState({ controlsChanged: true, ruleNumber, rule });
   }
 
-  toggleSingleCell = () => this.setState({ controlsChanged: true, singleCell: !this.state.singleCell })
+  toggleBoolean = (key) => this.setState({ controlsChanged: true, [key]: !this.state[key] })
 
   handleChange = (key, value) => this.setState({ controlsChanged: true, [key]: value })
+
+  setRandomRule = () => {
+    const ruleIndex = this.getRandomInt(Object.keys(rules).length);
+    const key = Object.keys(rules)[ruleIndex];
+    const ruleNumber = key.slice(4);
+    this.setState({ controlsChanged: true, ruleNumber, rule: rules[key] })
+  }
 
   render() {
     const { stateRules } = this.props;
@@ -182,7 +189,7 @@ class CellularAutomata extends React.Component {
               <Switch
                 disableRipple
                 checked={singleCell}
-                onChange={() => this.toggleSingleCell()}
+                onChange={() => this.toggleBoolean('singleCell')}
               />
             }
             label={singleCell?'Single Cell':'Random'}
@@ -205,6 +212,10 @@ class CellularAutomata extends React.Component {
             onChange={e => this.handleChange('heightRows', e.target.value)}
             margin="normal"
           />
+
+        <Button variant="outlined" onClick={() => this.setRandomRule()}>
+            Random Rule
+          </Button>
         </div>
 
         <div className="rules-controls">
