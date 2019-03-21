@@ -213,9 +213,11 @@ class CellularAutomata extends React.Component {
             margin="normal"
           />
 
-        <Button variant="outlined" onClick={() => this.setRandomRule()}>
+          <Button variant="outlined" onClick={() => this.setRandomRule()}>
             Random Rule
           </Button>
+
+          <div className="authorship">Developed by <a href="https://github.com/bl00mber/cellular-automata">bl00mber</a></div>
         </div>
 
         <div className="rules-controls">
