@@ -1,13 +1,14 @@
 import React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
+import { Switch, FormControlLabel } from '@material-ui/core'
 
 import rules from './rules'
 import './styles.scss'
 
 class CellularAutomata extends React.Component {
   static defaultProps = {
-    stateRules: [[1,1,1], [1,1,0], [1,0,1], [1,0,0], [0,1,1], [0,1,0], [0,0,1], [0,0,0]]
+    stateRules: [[1,1,1], [1,1,0], [1,0,1], [1,0,0], [0,1,1], [0,1,0], [0,0,1], [0,0,0]],
   }
 
   constructor(props) {
@@ -24,12 +25,13 @@ class CellularAutomata extends React.Component {
     }
 
     this.state = {
+      controlsChanged: false,
       ruleNumber: '30',
       rule: rules.rule30.slice(),
-      newRule: rules.rule30.slice(),
       scale: 13,
       width: undefined,
-      height: 80,
+      height: 80, //80
+      singleCell: true,
     }
   }
 
@@ -40,8 +42,10 @@ class CellularAutomata extends React.Component {
     this.setState({ width: initialWidth }, () => this.generateRule())
   }
 
+  getRandomInt = (max) => Math.floor(Math.random() * Math.floor(max))
+
   generateRule = () => {
-    const { scale, width, height } = this.state;
+    const { scale, width, height, singleCell } = this.state;
 
     let svg_dx = width,
         svg_dy = scale * height,
@@ -53,7 +57,15 @@ class CellularAutomata extends React.Component {
           return {'row': row, 'col': col, 'state': 0};
         });
 
-    cells[Math.round(n_cols/2)-1].state = 1; // set initial state of cell in first row, center col to 1
+    if (singleCell) {
+      cells[Math.round(n_cols/2)-1].state = 1; // set initial state of cell in first row, center col to 1
+    } else {
+      const cellsToBeFilled = this.getRandomInt(n_cols);
+      for (let i = 1; i < cellsToBeFilled; i++) {
+        const cellIndex = this.getRandomInt(n_cols);
+        cells[cellIndex].state = 1;
+      }
+    }
 
     d3.select('.svg-container').selectAll('svg').remove(); // destroy previous states
     let svg = d3.select('.svg-container')
@@ -73,10 +85,10 @@ class CellularAutomata extends React.Component {
        .attr('width', scale - 1)
 
     // update cell states for each row
-    rows.forEach(row => {
-      d3.selectAll('.row_' + row)
-        .call(this.plotStates, row)
-    });
+    for (let i = 0; i < rows.length; i++) {
+      d3.selectAll('.row_' + rows[i])
+        .call(this.plotStates, rows[i])
+    }
   }
 
   isOdd = (svg_dx, scale) => {
@@ -142,36 +154,46 @@ class CellularAutomata extends React.Component {
   }
 
   toggleStateRule = (index) => {
-    const { newRule } = this.state;
-    newRule[index] = newRule[index] ? 0 : 1;
+    const { rule } = this.state;
+    rule[index] = rule[index] ? 0 : 1;
     let ruleNumber;
     for (const key in rules) {
-      if (rules[key].equals(newRule)) {
+      if (rules[key].equals(rule)) {
         ruleNumber = key.slice(4);
         break
       }
     }
-    this.setState({ ruleNumber, newRule });
+    this.setState({ controlsChanged: true, ruleNumber, rule });
   }
 
-  generateNewRule = () => {
-    const { rule, newRule } = this.state;
-    if (!rule.equals(newRule)) this.setState({ rule: newRule.slice() }, () => this.generateRule())
-  }
+  toggleSingleCell = () => this.setState({ controlsChanged: true, singleCell: !this.state.singleCell })
 
   render() {
     const { stateRules } = this.props;
-    const { ruleNumber, rule, newRule, scale, width, height } = this.state;
+    const { controlsChanged, ruleNumber, rule, scale, width, height, singleCell } = this.state;
 
     return(
       <div className='container'>
         <div className='controls-container'>
-          <div className={rule.equals(newRule)?'generated-btn':'not-generated-btn'}
-            onClick={() => this.generateNewRule()}>Rule {ruleNumber}</div>
+          <FormControlLabel
+            control={
+              <Switch
+                disableRipple
+                checked={singleCell}
+                onChange={() => this.toggleSingleCell()}
+              />
+            }
+            label={singleCell?'Single Cell':'Random'}
+          />
+
+          <div className={(controlsChanged || !singleCell)?'not-generated-btn':'generated-btn'}
+              onClick={() => {if (controlsChanged || !singleCell) this.setState({ controlsChanged: false }, () => this.generateRule())}}>
+              Rule {ruleNumber}
+          </div>
         </div>
 
         <div className='rules-controls'>
-          {newRule.map((item, index) => <div key={index} className='rule-control'>
+          {rule.map((item, index) => <div key={index} className='rule-control'>
             <div className='rule-control-btn'
               onClick={() => this.toggleStateRule(index)}>
               <div className='rule-desc-container'>
