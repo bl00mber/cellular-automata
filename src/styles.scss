@@ -77,6 +77,7 @@ rect {
     background: #da0e0f;
   }
 }
+// Switcher
 .MuiSwitch-iconChecked-9 {
   color: black;
 }
@@ -84,5 +85,12 @@ rect {
   background-color: #000 !important;
 }
 .MuiFormControlLabel-root-1 {
+  margin-right: 25px !important;
+  height: 40px;
+}
+// Input
+.MuiFormControl-marginNormal-66 {
+  margin: 0 0 0 30px !important;
+  width: 80px;
   height: 40px;
 }

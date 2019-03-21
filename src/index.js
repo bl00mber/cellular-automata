@@ -1,7 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
-import { Switch, FormControlLabel } from '@material-ui/core'
+import { Switch, FormControlLabel, TextField } from '@material-ui/core'
 
 import rules from './rules'
 import './styles.scss'
@@ -29,8 +29,8 @@ class CellularAutomata extends React.Component {
       ruleNumber: '30',
       rule: rules.rule30.slice(),
       scale: 13,
-      width: undefined,
-      height: 80, //80
+      width: 0,
+      heightRows: 80, //80
       singleCell: true,
     }
   }
@@ -45,12 +45,12 @@ class CellularAutomata extends React.Component {
   getRandomInt = (max) => Math.floor(Math.random() * Math.floor(max))
 
   generateRule = () => {
-    const { scale, width, height, singleCell } = this.state;
+    const { scale, width, heightRows, singleCell } = this.state;
 
     let svg_dx = width,
-        svg_dy = scale * height,
+        svg_dy = scale * heightRows,
         n_cols = this.isOdd(svg_dx, scale),
-        n_rows = height,
+        n_rows = heightRows,
         rows = d3.range(n_rows),
         cols = d3.range(n_cols),
         cells = d3.cross(rows, cols, (row, col) => {
@@ -168,13 +168,15 @@ class CellularAutomata extends React.Component {
 
   toggleSingleCell = () => this.setState({ controlsChanged: true, singleCell: !this.state.singleCell })
 
+  handleChange = (key, value) => this.setState({ controlsChanged: true, [key]: value })
+
   render() {
     const { stateRules } = this.props;
-    const { controlsChanged, ruleNumber, rule, scale, width, height, singleCell } = this.state;
+    const { controlsChanged, ruleNumber, rule, scale, width, heightRows, singleCell } = this.state;
 
     return(
-      <div className='container'>
-        <div className='controls-container'>
+      <div className="container">
+        <div className="controls-container">
           <FormControlLabel
             control={
               <Switch
@@ -190,24 +192,37 @@ class CellularAutomata extends React.Component {
               onClick={() => {if (controlsChanged || !singleCell) this.setState({ controlsChanged: false }, () => this.generateRule())}}>
               Rule {ruleNumber}
           </div>
+
+          <TextField
+            label="Scale"
+            value={scale}
+            onChange={e => this.handleChange('scale', e.target.value)}
+            margin="normal"
+          />
+          <TextField
+            label="Height"
+            value={heightRows}
+            onChange={e => this.handleChange('heightRows', e.target.value)}
+            margin="normal"
+          />
         </div>
 
-        <div className='rules-controls'>
-          {rule.map((item, index) => <div key={index} className='rule-control'>
-            <div className='rule-control-btn'
+        <div className="rules-controls">
+          {rule.map((item, index) => <div key={index} className="rule-control">
+            <div className="rule-control-btn"
               onClick={() => this.toggleStateRule(index)}>
-              <div className='rule-desc-container'>
+              <div className="rule-desc-container">
                 <div className={stateRules[index][0]?'state-on':'state-off'}></div>
                 <div className={stateRules[index][1]?'state-on':'state-off'}></div>
                 <div className={stateRules[index][2]?'state-on':'state-off'}></div>
               </div>
               <div className={item?'state-on':'state-off'}></div>
             </div>
-            <div className='rule-desc-bool'>{item}</div>
+            <div className="rule-desc-bool">{item}</div>
           </div>)}
         </div>
 
-        <div className='svg-container'></div>
+        <div className="svg-container"></div>
       </div>
     )
   }
