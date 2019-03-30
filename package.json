@@ -16,12 +16,11 @@
   "author": "Nick Reiley <bloomber111@gmail.com> (https://github.com/bl00mber)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bl00mber/cellular-automata.git"
+    "url": "git+https://github.com/bl00mber/cellular-automata.git"
   },
   "scripts": {
     "start": "TARGET=dev NODE_ENV=development webpack-dev-server --progress",
-    "build": "TARGET=build NODE_ENV=production webpack -p --progress",
-    "analyze": "TARGET=analyze NODE_ENV=production webpack -p --progress"
+    "build": "TARGET=build NODE_ENV=production webpack -p --progress"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",
@@ -34,7 +33,6 @@
     "style-loader": "^0.23.1",
     "url-loader": "^1.1.2",
     "webpack": "^4.29.6",
-    "webpack-bundle-analyzer": "^3.1.0",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.2.1"
@@ -43,6 +41,7 @@
     "@material-ui/core": "^3.9.2",
     "d3": "^5.9.2",
     "react": "^16.8.4",
-    "react-dom": "^16.8.4"
+    "react-dom": "^16.8.4",
+    "react-grid-dropdown": "^1.0.0"
   }
 }

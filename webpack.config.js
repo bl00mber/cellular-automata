@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const TARGET = process.env.TARGET;
 const ROOT_PATH = path.resolve(__dirname);
@@ -65,7 +64,7 @@ if (TARGET === 'dev') {
 }
 
 // Production configuration settings
-if (TARGET === 'build' || TARGET === 'analyze') {
+if (TARGET === 'build') {
   let plugins = [
     new webpack.DefinePlugin({
       'process.env': {
@@ -74,9 +73,6 @@ if (TARGET === 'build' || TARGET === 'analyze') {
       __DEV__: false
     })
   ];
-  if (TARGET === 'analyze') {
-    plugins.push(new BundleAnalyzerPlugin());
-  }
   module.exports = merge(common, {
     mode: 'production',
     entry: {

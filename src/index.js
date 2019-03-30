@@ -2,6 +2,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import * as d3 from 'd3'
 import { Switch, FormControlLabel, TextField, Button } from '@material-ui/core'
+import GridDropdown from 'react-grid-dropdown'
 
 import rules from './rules'
 import './styles.scss'
@@ -25,6 +26,8 @@ class CellularAutomata extends React.Component {
     }
 
     this.state = {
+      rulesForDropdown: this.getRulesForDropdown(),
+      activeDropdownItem: 'rule30',
       controlsChanged: false,
       ruleNumber: '30',
       rule: rules.rule30.slice(),
@@ -177,13 +180,42 @@ class CellularAutomata extends React.Component {
     this.setState({ controlsChanged: true, ruleNumber, rule: rules[key] })
   }
 
+  getRulesForDropdown = () => {
+    const items = [];
+
+    for (const key in rules) {
+      const id = key;
+      const ruleNumber = id.slice(4);
+      const label = 'RULE '+ruleNumber;
+
+      let category;
+      if (['rule30', 'rule90', 'rule110', 'rule184'].includes(id)) { category = 'most interesting rules' }
+      else if (['rule18', 'rule45', 'rule60', 'rule62', 'rule73', 'rule75', 'rule86', 'rule89', 'rule101', 'rule102', 'rule105', 'rule124', 'rule129', 'rule131', 'rule135', 'rule137', 'rule145', 'rule149', 'rule150', 'rule153', 'rule169', 'rule193', 'rule225'].includes(id)) { category = 'interesting rules'}
+      else { category = 'other rules' }
+
+      items.push({section: category, label, id, onClick: () =>
+        this.setState({ controlsChanged: true, ruleNumber, rule: rules['rule'+ruleNumber] })})
+    }
+
+    return items
+  }
+
   render() {
     const { stateRules } = this.props;
-    const { controlsChanged, ruleNumber, rule, scale, width, heightRows, singleCell } = this.state;
+    const { rulesForDropdown, controlsChanged, ruleNumber, rule, scale, width, heightRows, singleCell } = this.state;
 
     return(
       <div className="container">
         <div className="controls-container">
+          <GridDropdown
+            label="rules"
+            activeItem={'rule'+ruleNumber}
+            items={rulesForDropdown}
+            sectionsOrder={['most interesting rules', 'interesting rules', 'other rules']}
+            buttonStyle={{margin: '2px 23px 0 0'}}
+            dropdownStyle={{width: '975px', height: '485px'}}
+          />
+
           <FormControlLabel
             control={
               <Switch
