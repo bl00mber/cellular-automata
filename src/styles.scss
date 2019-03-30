@@ -77,25 +77,26 @@ rect {
     background: #da0e0f;
   }
 }
-// Switcher
-.MuiSwitch-iconChecked-9 {
+// Switch
+.switch-base span span {
   color: black;
 }
-.MuiSwitch-colorSecondary-13.MuiSwitch-checked-11 + .MuiSwitch-bar-15 {
+.switch-bar {
   background-color: #000 !important;
 }
-.MuiFormControlLabel-root-1 {
+// Switch label
+.controls-container > label:first-of-type  {
   margin-right: 25px !important;
   height: 40px;
 }
 // Input
-.MuiFormControl-marginNormal-66 {
+.text-field {
   margin: 0 0 0 30px !important;
   width: 80px;
   height: 40px;
 }
 // Outlined button
-.MuiButton-outlined-125 {
+.random-rule-button {
   height: 35px;
   margin: 3px 0 0 25px !important;
 }
