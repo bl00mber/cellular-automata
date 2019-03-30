@@ -105,6 +105,18 @@ rect {
   color: #9a9a9a;
 
   a {
-    color: black !important;
+    color: black;
+  }
+}
+.rule-text {
+  font-size: 14px;
+  border: 1px solid #c5c5c5;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 5px;
+  max-width: 60%;
+
+  a {
+    color: black;
   }
 }
